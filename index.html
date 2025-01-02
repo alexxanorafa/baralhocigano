@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo de Tarô</title>
+  <meta name="description" content="Descubra o significado das cartas de tarô">
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      background-color: #f8f8f8;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+    }
+
+    .tarot-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #ecf0f1;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 150px;
+      height: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card-img {
+      max-width: 100%;
+      border-radius: 10px;
+      transition: transform 0.5s;
+    }
+
+    .card-title {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      background-color: rgba(44, 62, 80, 0.8);
+      color: #ecf0f1;
+      font-size: 1em;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .card-meaning {
+      background-color: #ecf0f1;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+      width: 50%;
+      margin-left: 25%;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: #2c3e50;
+      font-size: 0.9em;
+    }
+
+    .button-container {
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #34495e;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Jogo de Tarô - Exploração dos Sonhos</h1>
+  </header>
+
+  <main>
+    <div class="tarot-container" id="tarot-container">
+      <!-- Cartas serão geradas aqui -->
+    </div>
+
+    <div class="button-container">
+      <button onclick="drawCards()">Tirar Cartas</button>
+    </div>
+
+    <div class="result" id="result">
+      <h2>Significado da Tiragem</h2>
+      <p id="reading"></p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Jogo de Tarô - Inspirado nos Sonhos e no Tempo</p>
+  </footer>
+
+  <script>
+    const cards = [
+  { title: "O Mago", img: "carta1.png", meaning: "O Mago indica novas oportunidades e criatividade." },
+  { title: "A Papisa", img: "carta2.png", meaning: "A Papisa sugere sabedoria, conhecimento, intuição e mistério." },
+  { title: "A Imperatriz", img: "carta3.png", meaning: "A Imperatriz simboliza fertilidade, criatividade, abundância e nutrição." },
+  { title: "O Imperador", img: "carta4.png", meaning: "O Imperador representa liderança, estabilidade, autoridade e segurança." },
+  { title: "O Papa", img: "carta5.png", meaning: "O Papa simboliza tradição, ensino, moralidade e orientação." },
+  { title: "Os Enamorados", img: "carta6.png", meaning: "Os Enamorados indicam escolha, paixão, união e dualidade." },
+  { title: "O Carro", img: "carta7.png", meaning: "O Carro representa controle, sucesso, vitória e progresso." },
+  { title: "A Justiça", img: "carta8.png", meaning: "A Justiça simboliza equilíbrio, imparcialidade, legalidade e verdade." },
+  { title: "O Eremita", img: "carta9.png", meaning: "O Eremita indica solidão, introspecção, iluminação e filosofia." },
+  { title: "A Roda da Fortuna", img: "carta10.png", meaning: "A Roda da Fortuna representa mudança, ciclo, destino e karma." },
+  { title: "A Força", img: "carta11.png", meaning: "A Força simboliza coragem, autocontrole, compaixão e superação." },
+  { title: "O Enforcado", img: "carta12.png", meaning: "O Enforcado indica sacrifício, mudança de perspectiva, rendição e aceitação." },
+  { title: "A Morte", img: "carta13.png", meaning: "A Morte representa transformação, renovação, transição e mudança." },
+  { title: "A Temperança", img: "carta14.png", meaning: "A Temperança simboliza harmonia, moderação, equilíbrio emocional e cura." },
+  { title: "O Diabo", img: "carta15.png", meaning: "O Diabo representa desejo, tentação, materialismo e vício." },
+  { title: "A Torre", img: "carta16.png", meaning: "A Torre simboliza crise, destruição, mudança súbita e iluminação." },
+  { title: "A Estrela", img: "carta17.png", meaning: "A Estrela representa esperança, otimismo, inspiração e sonhos." },
+  { title: "A Lua", img: "carta18.png", meaning: "A Lua simboliza mistério, ilusão, subconsciente e intuição." },
+  { title: "O Sol", img: "carta19.png", meaning: "O Sol representa vitalidade, clareza, iluminação e sucesso." },
+  { title: "O Julgamento", img: "carta20.png", meaning: "O Julgamento simboliza renovação, redenção, despertar e julgamento." },
+  { title: "O Mundo", img: "carta21.png", meaning: "O Mundo representa conclusão, realização, perfeição e integridade." },
+  { title: "O Louco (sem número)", img: "carta22.png", meaning: "O Louco simboliza viagem, liberdade, espontaneidade e risco." },
+  { title: "O Mago", img: "carta23.png", meaning: "O Mago indica novas oportunidades e criatividade." },
+  { title: "A Papisa", img: "carta24.png", meaning: "A Papisa sugere sabedoria, conhecimento, intuição e mistério." },
+  { title: "A Imperatriz", img: "carta25.png", meaning: "A Imperatriz simboliza fertilidade, criatividade, abundância e nutrição." },
+  { title: "O Imperador", img: "carta26.png", meaning: "O Imperador representa liderança, estabilidade, autoridade e segurança." },
+  { title: "O Papa", img: "carta27.png", meaning: "O Papa simboliza tradição, ensino, moralidade e orientação." },
+  { title: "Os Enamorados", img: "carta28.png", meaning: "Os Enamorados indicam escolha, paixão, união e dualidade." },
+  { title: "O Carro", img: "carta29.png", meaning: "O Carro representa controle, sucesso, vitória e progresso." },
+  { title: "A Justiça", img: "carta30.png", meaning: "A Justiça simboliza equilíbrio, imparcialidade, legalidade e verdade." },
+  { title: "O Sol", img: "carta31.png", meaning: "O Sol representa vitalidade, clareza, iluminação e sucesso." },
+  { title: "A Lua", img: "carta32.png", meaning: "A Lua simboliza mistério, ilusão, subconsciente e intuição." },
+  { title: "A Torre", img: "carta33.png", meaning: "A Torre simboliza crise, destruição, mudança súbita e iluminação." },
+  { title: "A Estrela", img: "carta34.png", meaning: "A Estrela representa esperança, otimismo, inspiração e sonhos." },
+  { title: "A Lua Crescente", img: "carta35.png", meaning: "A Lua Crescente simboliza crescimento, progresso, evolução e mudança." },
+  { title: "A Lua Cheia", img: "carta36.png", meaning: "A Lua Cheia representa poder, realização, visibilidade e conclusão." },
+  { title: "A Lua Minguante", img: "carta37.png", meaning: "A Lua Minguante simboliza liberação, desapego, deixar ir e finalização." },
+  { title: "O Louco", img: "carta38.png", meaning: "O Louco simboliza viagem, liberdade, espontaneidade e risco." },
+  { title: "O Mago", img: "carta39.png", meaning: "O Mago indica novas oportunidades e criatividade." },
+  { title: "A Sacerdotisa", img: "carta40.png", meaning: "A Sacerdotisa sugere sabedoria, conhecimento, intuição e mistério." },
+  { title: "A Imperatriz", img: "carta41.png", meaning: "A Imperatriz simboliza fertilidade, criatividade, abundância e nutrição." },
+  { title: "O Imperador", img: "carta42.png", meaning: "O Imperador representa liderança, estabilidade, autoridade e segurança." },
+  { title: "O Hierofante", img: "carta43.png", meaning: "O Hierofante simboliza tradição, ensino, moralidade e orientação." },
+  { title: "O Carro", img: "carta44.png", meaning: "O Carro representa controle, sucesso, vitória e progresso." },
+  { title: "A Justiça", img: "carta45.png", meaning: "A Justiça simboliza equilíbrio, imparcialidade, legalidade e verdade." },
+  { title: "O Eremita", img: "carta46.png", meaning: "O Eremita indica solidão, introspecção, iluminação e filosofia." },
+  { title: "A Roda da Fortuna", img: "carta47.png", meaning: "A Roda da Fortuna representa mudança, ciclo, destino e karma." },
+  { title: "A Força", img: "carta48.png", meaning: "A Força simboliza coragem, autocontrole, compaixão e superação." },
+  { title: "O Enforcado", img: "carta49.png", meaning: "O Enforcado indica sacrifício, mudança de perspectiva, rendição e aceitação." },
+  { title: "A Morte", img: "carta50.png", meaning: "A Morte representa transformação, renovação, transição e mudança." },
+  { title: "A Temperança", img: "carta51.png", meaning: "A Temperança simboliza harmonia, moderação, equilíbrio emocional e cura." },
+  { title: "O Diabo", img: "carta52.png", meaning: "O Diabo representa desejo, tentação, materialismo e vício." },
+  { title: "A Casa de Deus", img: "carta53.png", meaning: "A Casa de Deus simboliza desastre, ruína, destruição e transformação." },
+  { title: "A Estrela de Belém", img: "carta54.png", meaning: "A Estrela de Belém representa esperança, renovação, inspiração e orientação." },
+  { title: "A Lua", img: "carta55.png", meaning: "A Lua simboliza mistério, ilusão, subconsciente e intuição." },
+  { title: "O Sol", img: "carta56.png", meaning: "O Sol representa vitalidade, clareza, iluminação e sucesso." },
+  { title: "O Julgamento", img: "carta57.png", meaning: "O Julgamento simboliza renovação, redenção, despertar e julgamento." },
+  { title: "O Mundo", img: "carta58.png", meaning: "O Mundo representa conclusão, realização, perfeição e integridade." },
+  { title: "O Louco", img: "carta59.png", meaning: "O Louco simboliza viagem, liberdade, espontaneidade e risco." },
+  { title: "O Mago", img: "carta60.png", meaning: "O Mago indica novas oportunidades e criatividade." },
+  { title: "Cavalheiro de Espadas", img: "carta61.png", meaning: "O Cavalheiro de Espadas representa ação, coragem, bravura e guerra." },
+  { title: "Cavalheiro de Copas", img: "carta62.png", meaning: "O Cavalheiro de Copas representa amor, paixão, romantismo e união." },
+  { title: "Cavalheiro de Ouros", img: "carta63.png", meaning: "O Cavalheiro de Ouros representa ambição, riqueza, segurança e materialidade." },
+  { title: "Cavalheiro de Paus", img: "carta64.png", meaning: "O Cavalheiro de Paus representa criatividade, energia, iniciativa e inovação." },
+  { title: "Rainha de Espadas", img: "carta65.png", meaning: "A Rainha de Espadas representa inteligência, astúcia, independência e solidão." },
+  { title: "Rainha de Copas", img: "carta66.png", meaning: "A Rainha de Copas representa sensibilidade, compaixão, emotividade e intuição." },
+  { title: "Rainha de Ouros", img: "carta67.png", meaning: "A Rainha de Ouros representa praticidade, estabilidade, riqueza e segurança material." },
+  { title: "Rainha de Paus", img: "carta68.png", meaning: "A Rainha de Paus representa liderança, coragem, força e determinação." },
+  { title: "Rei de Espadas", img: "carta69.png", meaning: "O Rei de Espadas representa razão, lógica, justiça e poder." },
+  { title: "Rei de Copas", img: "carta70.png", meaning: "O Rei de Copas representa sabedoria, harmonia, equilíbrio e compreensão." },
+  { title: "Rei de Ouros", img: "carta71.png", meaning: "O Rei de Ouros representa estabilidade, segurança, tradição e prosperidade material." },
+  { title: "Rei de Paus", img: "carta72.png", meaning: "O Rei de Paus representa autoridade, ambição, poder e sucesso." },
+  { title: "As de Espadas", img: "carta73.png", meaning: "O As de Espadas representa poder, força, vitória e justiça." },
+  { title: "As de Copas", img: "carta74.png", meaning: "O As de Copas representa amor, felicidade, harmonia e fertilidade." },
+  { title: "As de Ouros", img: "carta75.png", meaning: "O As de Ouros representa riqueza, prosperidade, segurança e estabilidade." },
+  { title: "As de Paus", img: "carta76.png", meaning: "O As de Paus representa criatividade, paixão, força e coragem." },
+  { title: "Cavaleiro de Espadas", img: "carta77.png", meaning: "O Cavaleiro de Espadas representa ação, coragem, impulsividade e movimento." },
+  { title: "Cavaleiro de Copas", img: "carta78.png", meaning: "O Cavaleiro de Copas representa paixão, emoção, romantismo e intuição." }
+];
+
+    const tarotContainer = document.getElementById("tarot-container");
+    const readingElement = document.getElementById("reading");
+
+    // Função para tirar cartas
+    function drawCards() {
+      tarotContainer.innerHTML = ""; // Limpa o container das cartas
+      const selectedCards = cards.sort(() => 0.5 - Math.random()).slice(0, 3); // Seleciona 3 cartas aleatórias
+
+      selectedCards.forEach(card => {
+        const cardElement = document.createElement("div");
+        cardElement.className = "card";
+        cardElement.innerHTML = `
+          <img src="${card.img}" alt="${card.title}" class="card-img">
+          <div class="card-title">${card.title}</div>
+        `;
+
+        // Adiciona o evento de clique para mostrar o significado da carta
+        cardElement.addEventListener("click", () => showCardMeaning(card));
+
+        tarotContainer.appendChild(cardElement);
+      });
+
+      interpretReading(selectedCards); // Interpretação da tiragem
+    }
+
+    // Função para interpretar a leitura
+    function interpretReading(selectedCards) {
+      const meanings = selectedCards.map(card => card.meaning).join(" ");
+      readingElement.textContent = meanings;
+    }
+
+    // Função para mostrar o significado ao clicar na carta
+    function showCardMeaning(card) {
+      const existingMeaning = document.querySelector(".card-meaning");
+      if (existingMeaning) {
+        existingMeaning.remove(); // Remove o significado anterior
+      }
+
+      const meaningDiv = document.createElement("div");
+      meaningDiv.className = "card-meaning";
+      meaningDiv.innerHTML = `
+        <h3>${card.title}</h3>
+        <p>${card.meaning}</p>
+      `;
+      document.body.appendChild(meaningDiv); // Adiciona o significado abaixo das cartas
+    }
+  </script>
+</body>
+
+</html>
